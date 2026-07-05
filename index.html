@@ -136,6 +136,10 @@
       padding: 40px 20px; text-align: center; color: rgba(0,255,200,0.25);
       font-family: "Orbitron", sans-serif; letter-spacing: 0.3em; text-transform: uppercase;
     }
+    .held-nft-image-wrapper { width: 100%; max-width: 250px; aspect-ratio: 1/1; border: none; background: #000; display: none; }
+    .held-nft-image-wrapper img { width: 100%; height: 100%; object-fit: cover; opacity: 0.9; }
+    .held-nft-info { padding: 15px; text-align: center; display: none; }
+    .held-nft-name { font-family: "Orbitron", sans-serif; font-size: 14px; color: var(--cyan); letter-spacing: 1px; }
 
     .chat-log {
       flex: 1; min-height: 200px;
@@ -252,6 +256,12 @@
           </div>
 
           <div id="held-nft-display" class="held-nft-panel">
+            <div id="held-nft-image-wrapper" class="held-nft-image-wrapper">
+              <img id="held-nft-image" src="" alt="Active Gross Bro">
+            </div>
+            <div id="held-nft-info" class="held-nft-info">
+              <div id="held-nft-name" class="held-nft-name">SPECIMEN #000</div>
+            </div>
             <div id="held-nft-empty" class="held-nft-empty" style="opacity:0.8; font-size:12px; letter-spacing:0.2em;">GUEST ACCESS</div>
           </div>
 
@@ -316,8 +326,18 @@
     const xamanStatus = document.getElementById('xaman-status');
     const qrOverlay = document.getElementById('qr-overlay');
     const qrImage = document.getElementById('qr-image');
+    
+    // NFT Display Elements
+    const nftImageWrapper = document.getElementById('held-nft-image-wrapper');
+    const nftImage = document.getElementById('held-nft-image');
+    const nftInfo = document.getElementById('held-nft-info');
+    const nftName = document.getElementById('held-nft-name');
+    const nftEmpty = document.getElementById('held-nft-empty');
 
     let checkInterval = null;
+    let selectedNft = null;
+
+    const GGB_ISSUER = "rP1wMvanhfmsm7Af4FcHvSvfhash43LWSY";
 
     function switchTab(idx) {
       document.querySelectorAll('.tab').forEach((t, i) => {
@@ -367,9 +387,53 @@
             localStorage.setItem("ggb_wallet", addr);
             xamanBtn.textContent = "LINKED";
             xamanStatus.textContent = addr.slice(0,6) + "..." + addr.slice(-4);
+            fetchUserNfts(addr);
           }
         } catch (e) {}
       }, 2500);
+    }
+
+    async function fetchUserNfts(address) {
+      try {
+        // Query XRPL for account NFTs
+        const res = await fetch(`/api/nft?owner=${address}&issuer=${GGB_ISSUER}`);
+        const data = await res.json();
+        
+        // Filter for Galactic Gross Bros collection
+        const nfts = (data.nfts || []).filter(n => {
+          const issuer = n.issuer || (n.metadata && n.metadata.issuer);
+          return issuer === GGB_ISSUER;
+        });
+
+        if (nfts.length > 0) {
+          selectedNft = nfts[0];
+          updateNftDisplay(selectedNft);
+        }
+      } catch (e) {
+        console.error("Error fetching NFTs:", e);
+      }
+    }
+
+    function updateNftDisplay(nft) {
+      if (!nft) return;
+      
+      const metadata = nft.metadata || {};
+      const name = metadata.name || nft.nftokenID || "GROSS BRO";
+      let image = metadata.image || metadata.image_url || nft.uri || "";
+      
+      // Basic IPFS resolution
+      if (image.startsWith("ipfs://")) {
+        image = "https://ipfs.io/ipfs/" + image.slice(7);
+      }
+
+      nftEmpty.style.display = "none";
+      nftImageWrapper.style.display = "block";
+      nftInfo.style.display = "block";
+      
+      nftImage.src = image;
+      nftName.textContent = name;
+      
+      addMessage(`Neural link established with ${name}.`);
     }
 
     function init() {
@@ -377,13 +441,25 @@
       if (saved) {
         xamanBtn.textContent = "LINKED";
         xamanStatus.textContent = saved.slice(0,6) + "..." + saved.slice(-4);
+        fetchUserNfts(saved);
       }
     }
 
     function addMessage(text, isUser = false) {
       const bubble = document.createElement('div');
       bubble.className = `bubble ${isUser ? 'user' : 'system'}`;
-      bubble.innerHTML = isUser ? text : `> ${text}`;
+      
+      const roleName = isUser ? "YOU" : (selectedNft ? (selectedNft.metadata?.name || "BRO") : "SYSTEM");
+      const avatar = (!isUser && selectedNft) ? `<img src="${nftImage.src}" style="width: 20px; height: 20px; border-radius: 50%; border: 1px solid var(--cyan); margin-right: 8px;">` : "";
+
+      bubble.innerHTML = `
+        <div style="display: flex; align-items: center; margin-bottom: 4px;">
+          ${avatar}
+          <div style="font-size: 10px; font-weight: bold; letter-spacing: 1px; color: var(--cyan);">${roleName}</div>
+        </div>
+        ${isUser ? text : `> ${text}`}
+      `;
+      
       chatLog.appendChild(bubble);
       chatLog.scrollTop = chatLog.scrollHeight;
     }
@@ -395,7 +471,6 @@
       addMessage(val, true);
       chatInput.value = '';
       
-      // OpenRouter chat behavior wired (Placeholder for future API integration)
       setTimeout(() => {
         addMessage("SIGNAL RECEIVED. NEURAL RELAY PROCESSING DIRECTIVE...");
       }, 750);
