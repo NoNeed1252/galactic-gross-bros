@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>GALACTIC GROSS BROS // TERMINAL</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <style>
+    :root { 
+      --cyan: #00ffc8; 
+      --bg: #050505; 
+      --line: rgba(0, 255, 200, 0.18); 
+      --glow: rgba(0, 255, 200, 0.3);
+    }
+    
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    html, body { 
+      background: var(--bg); 
+      color: var(--cyan);
+      font-family: "Share Tech Mono", monospace; 
+      height: 100vh; 
+      width: 100vw;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* CRT Scanline Effect */
+    body::before {
+      content: " ";
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 255, 0, 0.03));
+      background-size: 100% 2px, 3px 100%;
+      pointer-events: none;
+      z-index: 100;
+      opacity: 0.1;
+    }
+
+    header {
+      padding: 20px;
+      border-bottom: 1px solid var(--line);
+      text-align: center;
+      background: rgba(0,0,0,0.5);
+      box-shadow: 0 0 20px var(--glow);
+    }
+
+    h1 {
+      font-family: "Orbitron", sans-serif;
+      text-transform: uppercase;
+      letter-spacing: 0.4em;
+      font-size: clamp(14px, 3vw, 22px);
+      text-shadow: 0 0 10px var(--cyan);
+    }
+
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+      overflow: hidden;
+      gap: 20px;
+    }
+
+    #chat-container {
+      flex: 1;
+      border: 1px solid var(--line);
+      background: rgba(0, 0, 0, 0.8);
+      overflow-y: auto;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      scrollbar-width: thin;
+      scrollbar-color: var(--cyan) transparent;
+    }
+
+    #chat-container::-webkit-scrollbar { width: 6px; }
+    #chat-container::-webkit-scrollbar-thumb { background: var(--cyan); }
+
+    .message {
+      max-width: 85%;
+      padding: 12px 16px;
+      line-height: 1.5;
+      font-size: 14px;
+      position: relative;
+    }
+
+    /* Rigid corners for NFT elements/bubbles */
+    .message.bot {
+      align-self: flex-start;
+      border: 1px solid var(--line);
+      border-left: 4px solid var(--cyan);
+      background: rgba(0, 255, 200, 0.03);
+    }
+
+    .message.user {
+      align-self: flex-end;
+      border: 1px solid var(--cyan);
+      background: rgba(0, 255, 200, 0.1);
+    }
+
+    .input-area {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    input[type="text"] {
+      flex: 1;
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid var(--line);
+      color: var(--cyan);
+      padding: 14px 18px;
+      font-family: "Share Tech Mono", monospace;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    input[type="text"]:focus {
+      border-color: var(--cyan);
+      box-shadow: 0 0 10px var(--glow);
+    }
+
+    /* Rounded corners for functional controls (18px) */
+    button {
+      background: var(--cyan);
+      color: #000;
+      border: none;
+      padding: 14px 28px;
+      border-radius: 18px;
+      font-family: "Orbitron", sans-serif;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    button:hover {
+      box-shadow: 0 0 20px var(--cyan);
+      transform: translateY(-1px);
+    }
+
+    button:active {
+      transform: translateY(1px);
+    }
+
+    .socials-panel {
+      padding: 20px;
+      border-top: 1px solid var(--line);
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      background: rgba(0,0,0,0.5);
+    }
+
+    .social-link {
+      text-decoration: none;
+      color: var(--cyan);
+      font-family: "Orbitron", sans-serif;
+      font-size: 12px;
+      letter-spacing: 2px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      opacity: 0.7;
+      transition: opacity 0.2s, text-shadow 0.2s;
+    }
+
+    .social-link:hover {
+      opacity: 1;
+      text-shadow: 0 0 10px var(--cyan);
+    }
+
+    /* Mobile Safari Optimization */
+    @media (max-width: 600px) {
+      main { padding: 10px; }
+      .input-area { gap: 8px; }
+      button { padding: 14px 20px; font-size: 12px; }
+      .socials-panel { gap: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>GALACTIC GROSS BROS // NEURAL_TERMINAL_v1.0</h1>
+  </header>
+
+  <main>
+    <div id="chat-container">
+      <div class="message bot">
+        > CONNECTION ESTABLISHED...<br>
+        > LOCAL TIME: <span id="time-display"></span><br>
+        > STATUS: NEURAL RELAY STABLE<br>
+        <br>
+        WELCOME, OPERATOR. I AM THE ARCHIVE GUARDIAN. WHAT IS YOUR QUERY REGARDING THE GROSS BROS LORE OR THE XRP-7 INCIDENT?
+      </div>
+    </div>
+
+    <form class="input-area" id="chat-form">
+      <input type="text" id="user-input" placeholder="ENTER DIRECTIVE..." autocomplete="off">
+      <button type="submit">TRANSMIT</button>
+    </form>
+  </main>
+
+  <footer class="socials-panel">
+    <a href="https://x.com/THEGROSSBROS" target="_blank" class="social-link">X // TWITTER</a>
+    <a href="https://discord.gg/fcZYk7UcB" target="_blank" class="social-link">DISCORD</a>
+  </footer>
+
+  <script>
+    const chatContainer = document.getElementById('chat-container');
+    const chatForm = document.getElementById('chat-form');
+    const userInput = document.getElementById('user-input');
+    const timeDisplay = document.getElementById('time-display');
+
+    // Update time
+    setInterval(() => {
+      const now = new Date();
+      timeDisplay.textContent = now.toTimeString().split(' ')[0];
+    }, 1000);
+    timeDisplay.textContent = new Date().toTimeString().split(' ')[0];
+
+    const LORE_RESPONSES = [
+      "THE OOZE ON XRP-7 WAS NEVER MEANT TO BE MINED. IT WAS A NEURAL CATALYST.",
+      "CCE PROTOCOLS WERE BYPASSED DURING THE RUPTURE. THE BROTHERS ARE FREE.",
+      "THE LEDGER DOES NOT JUST RECORD TRANSACTIONS; IT RECORDS OUR EVOLUTION.",
+      "SENSORS DETECT TRACES OF CRYPTO-MUTAGENS IN YOUR SECTOR.",
+      "THE BIG-EYED SPECIMENS ARE GUARDIANS OF THE DEEP DATA.",
+      "WARNING: CORPORATE LIQUIDATION SWEEPS ARE APPROACHING QUADRANT 4."
+    ];
+
+    function appendMessage(text, isUser = false) {
+      const msg = document.createElement('div');
+      msg.className = `message ${isUser ? 'user' : 'bot'}`;
+      msg.innerHTML = isUser ? text : `> ${text}`;
+      chatContainer.appendChild(msg);
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+
+    chatForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const val = userInput.value.trim();
+      if (!val) return;
+
+      appendMessage(val, true);
+      userInput.value = '';
+
+      // Simulate neural latency
+      setTimeout(() => {
+        const resp = LORE_RESPONSES[Math.floor(Math.random() * LORE_RESPONSES.length)];
+        appendMessage(resp);
+      }, 800);
+    });
+  </script>
+</body>
+</html>
