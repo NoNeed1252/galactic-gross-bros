@@ -94,7 +94,22 @@
     @keyframes ticker-anim { from { transform: translateX(0); } to { transform: translateX(-50%); } }
     .ticker-item { color: rgba(0,255,200,.9); font-size: 13px; white-space: nowrap; letter-spacing: 1px; }
 
+    /* Tabs */
+    .tabs {
+      display: flex; border-bottom: 1px solid var(--line);
+      background: #0b0b0b;
+    }
+    .tab {
+      flex: 1; padding: 16px 12px; text-align: center; cursor: pointer;
+      border-right: 1px solid rgba(0,255,200,.06); user-select: none; transition: .18s ease;
+      font-family: "Orbitron", sans-serif; font-size: 12px; letter-spacing: 2px;
+    }
+    .tab:last-child { border-right: none; }
+    .tab.active { color: var(--cyan); background: linear-gradient(180deg, rgba(0,255,200,.14), rgba(0,255,200,.03)); box-shadow: inset 0 -1px 0 rgba(0,255,200,.35); }
+
     .content { flex: 1; overflow-y: auto; padding: 18px; background: #000; display: flex; flex-direction: column; gap: 18px; }
+    .section { display: none; flex-direction: column; height: 100%; }
+    .section.active { display: flex; }
 
     .panel {
       background: radial-gradient(circle at 50% 50%, rgba(7,18,17,.98), rgba(2,8,8,.98));
@@ -123,7 +138,7 @@
     }
 
     .chat-log {
-      flex: 1; min-height: 280px;
+      flex: 1; min-height: 200px;
       overflow-y: auto;
       border: 1px solid var(--line);
       background: rgba(0,0,0,0.3);
@@ -154,15 +169,19 @@
     }
     input:focus { border-color: var(--cyan); }
 
-    .socials-footer {
-      padding: 20px; border-top: 1px solid var(--line);
-      display: flex; justify-content: center; gap: 40px; background: #0a0a0a;
+    /* Social Cards */
+    .social-links { display: grid; gap: 16px; width: 100%; max-width: 800px; margin: 0 auto; }
+    .social-card { 
+      display: flex; align-items: center; justify-content: space-between; padding: 20px; 
+      border: 1px solid rgba(0,255,200,0.2); border-radius: 20px; background: rgba(0,255,200,0.04); 
+      text-decoration: none; transition: all 0.2s ease;
     }
-    .social-link {
-      color: var(--cyan); text-decoration: none; font-family: "Orbitron", sans-serif;
-      font-size: 12px; letter-spacing: 2px; opacity: 0.7; transition: .2s;
+    .social-card:hover {
+      background: rgba(0,255,200,0.08); border-color: var(--cyan);
+      box-shadow: 0 0 15px rgba(0,255,200,0.1);
     }
-    .social-link:hover { opacity: 1; text-shadow: 0 0 10px var(--cyan); }
+    .social-card .label { font-family: "Orbitron", sans-serif; font-size: 14px; color: var(--cyan); margin-bottom: 6px; letter-spacing: 1px; }
+    .social-card .desc { font-size: 12px; color: rgba(0,255,200,0.7); }
 
     #qr-overlay {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -214,54 +233,80 @@
       </div>
     </div>
 
+    <nav class="tabs">
+      <div class="tab active" onclick="switchTab(0)">FUSION LAB</div>
+      <div class="tab" onclick="switchTab(1)">SOCIALS</div>
+    </nav>
+
     <main class="content">
-      <div class="panel">
-        <div class="fuse-head">
-          <div>
-            <div class="muted-label">Fusion Lab</div>
-            <div class="muted-label" style="font-size: 10px; margin-bottom: 8px;">IN-WORLD COMMS TERMINAL</div>
-            <h2 style="font-family:Orbitron,sans-serif;font-size:clamp(20px,4vw,32px);margin:0; text-shadow: 0 0 15px var(--glow);">CHAT TERMINAL</h2>
+      <!-- Section: Fusion Lab -->
+      <section id="section-0" class="section active">
+        <div class="panel">
+          <div class="fuse-head">
+            <div>
+              <div class="muted-label">Fusion Lab</div>
+              <div class="muted-label" style="font-size: 10px; margin-bottom: 8px;">IN-WORLD COMMS TERMINAL</div>
+              <h2 style="font-family:Orbitron,sans-serif;font-size:clamp(20px,4vw,32px);margin:0; text-shadow: 0 0 15px var(--glow);">CHAT TERMINAL</h2>
+            </div>
+            <div id="fuse-lock-badge" class="fuse-badge">FUSION MODULE OFFLINE</div>
           </div>
-          <div id="fuse-lock-badge" class="fuse-badge">FUSION MODULE OFFLINE</div>
-        </div>
 
-        <div id="held-nft-display" class="held-nft-panel">
-          <div id="held-nft-empty" class="held-nft-empty" style="opacity:0.8; font-size:12px; letter-spacing:0.2em;">GUEST ACCESS</div>
-        </div>
+          <div id="held-nft-display" class="held-nft-panel">
+            <div id="held-nft-empty" class="held-nft-empty" style="opacity:0.8; font-size:12px; letter-spacing:0.2em;">GUEST ACCESS</div>
+          </div>
 
-        <div id="chat-log" class="chat-log">
-          <div class="bubble system">
-            > CONNECTION ESTABLISHED...<br>
-            > NEURAL INTERFACE LOADED...<br>
-            <br>
-            WELCOME, OPERATOR. WHAT IS YOUR QUERY REGARDING THE GROSS BROS LORE?
+          <div id="chat-log" class="chat-log">
+            <div class="bubble system">
+              > CONNECTION ESTABLISHED...<br>
+              > NEURAL INTERFACE LOADED...<br>
+              <br>
+              WELCOME, OPERATOR. WHAT IS YOUR QUERY REGARDING THE GROSS BROS LORE?
+            </div>
+          </div>
+
+          <div class="chat-extra-actions">
+            <button class="btn-sm">GUIDE</button>
+            <button class="btn-sm">Fuse</button>
+            <button class="btn-sm">Burner</button>
+            <button class="btn-sm">Start Bot</button>
+          </div>
+
+          <form class="input-area" id="chat-form">
+            <input type="text" id="chat-input" placeholder="SEND A DIRECTIVE..." autocomplete="off">
+            <button type="submit" class="btn">TRANSMIT</button>
+          </form>
+        </div>
+      </section>
+
+      <!-- Section: Socials -->
+      <section id="section-1" class="section">
+        <div class="panel">
+          <div class="muted-label" style="margin-bottom: 12px;">Communications Hub</div>
+          <h2 style="font-family:Orbitron,sans-serif;margin:0 0 24px; text-shadow: 0 0 15px var(--glow);">NEURAL TRANSMISSION CHANNELS</h2>
+          <div class="social-links">
+            <a href="https://x.com/thegrossbros?s=21" target="_blank" class="social-card">
+              <div>
+                <div class="label">X-SECURE TRANSMITTER</div>
+                <div class="desc">DIRECT FREQUENCY // @THEGROSSBROS</div>
+              </div>
+              <div class="btn">OPEN</div>
+            </a>
+            <a href="https://discord.gg/fcZYk7UcB" target="_blank" class="social-card">
+              <div>
+                <div class="label">THE DEN DECRYPTED</div>
+                <div class="desc">PRIVATE COMMS ENCRYPTED // DISCORD</div>
+              </div>
+              <div class="btn">JOIN</div>
+            </a>
           </div>
         </div>
-
-        <div class="chat-extra-actions">
-          <button class="btn-sm">GUIDE</button>
-          <button class="btn-sm">Fuse</button>
-          <button class="btn-sm">Burner</button>
-          <button class="btn-sm">Start Bot</button>
-        </div>
-
-        <form class="input-area" id="chat-form">
-          <input type="text" id="chat-input" placeholder="SEND A DIRECTIVE..." autocomplete="off">
-          <button type="submit" class="btn">TRANSMIT</button>
-        </form>
-      </div>
+      </section>
     </main>
 
-    <footer class="socials-footer">
-      <a href="https://x.com/thegrossbros?s=21" target="_blank" class="social-link">X // TWITTER</a>
-      <a href="https://discord.gg/fcZYk7UcB" target="_blank" class="social-link">DISCORD</a>
+    <footer style="padding: 20px; text-align: center; font-size: 10px; opacity: 0.6; border-top: 1px solid var(--line); letter-spacing: 2px;">
+      NEURAL LINK ENCRYPTED // NO BIOMETRIC DATA STORED
     </footer>
   </div>
-
-  <script type="module">
-    // Multi-Chain AppKit Stub (Placeholder for ESM Imports)
-    console.log("AppKit System Initialized");
-  </script>
 
   <script>
     const chatLog = document.getElementById('chat-log');
@@ -273,6 +318,15 @@
     const qrImage = document.getElementById('qr-image');
 
     let checkInterval = null;
+
+    function switchTab(idx) {
+      document.querySelectorAll('.tab').forEach((t, i) => {
+        t.classList.toggle('active', i === idx);
+      });
+      document.querySelectorAll('.section').forEach((s, i) => {
+        s.classList.toggle('active', i === idx);
+      });
+    }
 
     async function connectXaman() {
       try {
@@ -326,14 +380,6 @@
       }
     }
 
-    const LORE_RESPONSES = [
-      "THE NEURAL MUTATION ORIGINATED ON XRP-7.",
-      "THE GROSS BROS ARE THE GUARDIANS OF THE DEEP DATA.",
-      "CCE LIQUIDATION SWEEPS HAVE BEEN DETECTED IN YOUR SECTOR.",
-      "THE OOZE IS NOT JUST A SUBSTANCE; IT IS A CONSCIOUSNESS.",
-      "YOUR NEURAL LINK IS STABLE. PROCEED WITH CAUTION."
-    ];
-
     function addMessage(text, isUser = false) {
       const bubble = document.createElement('div');
       bubble.className = `bubble ${isUser ? 'user' : 'system'}`;
@@ -342,15 +388,16 @@
       chatLog.scrollTop = chatLog.scrollHeight;
     }
 
-    chatForm.addEventListener('submit', (e) => {
+    chatForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       const val = chatInput.value.trim();
       if (!val) return;
       addMessage(val, true);
       chatInput.value = '';
+      
+      // OpenRouter chat behavior wired (Placeholder for future API integration)
       setTimeout(() => {
-        const resp = LORE_RESPONSES[Math.floor(Math.random() * LORE_RESPONSES.length)];
-        addMessage(resp);
+        addMessage("SIGNAL RECEIVED. NEURAL RELAY PROCESSING DIRECTIVE...");
       }, 750);
     });
 
